@@ -22,6 +22,10 @@ def main():
         add to collection any numbers required to create the prime factorization of num
         without using any number more than once
     target = multiply collection together
+
+    EDIT: The problem thread enlightened me with this: for every prime number smaller than 20,
+    find the highest power of that prime number that is also smaller than 20 and multiply them
+    together.
     '''
     prime_factors = [
         2,   # (1), 2
