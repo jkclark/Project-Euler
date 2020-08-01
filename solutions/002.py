@@ -19,10 +19,10 @@ def main():
 
     total_of_evens = 0
     while c < 4_000_000:
-        c = a + b
         if c % 2 == 0:
             total_of_evens += c
 
+        c = a + b
         a = b
         b = c
 
