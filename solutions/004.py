@@ -9,7 +9,7 @@ Find the largest palindrome made from the product of two 3-digit numbers.
 from time import time
 
 
-def isPalindrome(num):
+def isPalindrome(num: int) -> bool:
     string_num = str(num)
     return string_num == string_num[::-1]
 
