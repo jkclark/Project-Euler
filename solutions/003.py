@@ -12,7 +12,10 @@ import tracemalloc
 from math import floor, sqrt
 
 
-def isPrime(num: int) -> bool:
+def _is_prime(num: int) -> bool:
+    if num <= 1:
+        return False
+
     for potential_factor in range(2, floor(sqrt(num)) + 1):
         if num % potential_factor == 0:
             return False
@@ -30,7 +33,7 @@ def main():
     largest_prime_factor = None
     GIVEN_NUMBER = 600851475143
     for potential_factor in range(floor(sqrt(GIVEN_NUMBER)) + 1, 1, -1):
-        if GIVEN_NUMBER % potential_factor == 0 and isPrime(potential_factor):
+        if GIVEN_NUMBER % potential_factor == 0 and _is_prime(potential_factor):
             largest_prime_factor = potential_factor
             break
 

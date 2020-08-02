@@ -13,7 +13,10 @@ import tracemalloc
 from math import floor, sqrt
 
 
-def isPrime(num: int) -> bool:
+def _is_prime(num: int) -> bool:
+    if num <= 1:
+        return False
+
     for potential_factor in range(2, floor(sqrt(num)) + 1):
         if num % potential_factor == 0:
             return False
@@ -31,7 +34,7 @@ def main():
     prime_count = 0
     candidate = 2
     while prime_count < 10001:
-        if isPrime(candidate):
+        if _is_prime(candidate):
             prime_count += 1
         candidate += 1
 

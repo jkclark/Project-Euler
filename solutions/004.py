@@ -11,7 +11,7 @@ from time import time
 import tracemalloc
 
 
-def isPalindrome(num: int) -> bool:
+def _is_palindrome(num: int) -> bool:
     string_num = str(num)
     return string_num == string_num[::-1]
 
@@ -27,7 +27,7 @@ def main():
     for a in range(100, 1000):
         for b in range(100, 1000):
             product = a * b
-            if isPalindrome(product):
+            if _is_palindrome(product):
                 max_palindrome = max(max_palindrome, product)
 
     print(f'Largest palindrome made from the product of two 3-digit numbers:\n\n\t{max_palindrome}\n')
