@@ -6,7 +6,9 @@ The largest palindrome made from the product of two 2-digit numbers is 9009 = 91
 Find the largest palindrome made from the product of two 3-digit numbers.
 '''
 
+from helpers import print_memory_usage_report, print_time_elapsed
 from time import time
+import tracemalloc
 
 
 def isPalindrome(num: int) -> bool:
@@ -15,6 +17,12 @@ def isPalindrome(num: int) -> bool:
 
 
 def main():
+    # Keep track of time elapsed and memory used
+    start_time = time()
+    tracemalloc.start()
+
+    # ********** Solution begins here ********** #
+
     max_palindrome = 0
     for a in range(100, 1000):
         for b in range(100, 1000):
@@ -22,10 +30,19 @@ def main():
             if isPalindrome(product):
                 max_palindrome = max(max_palindrome, product)
 
-    print(f'Largest palindrome made from the product of two 3-digit numbers: {max_palindrome}')
+    print(f'Largest palindrome made from the product of two 3-digit numbers:\n\n\t{max_palindrome}\n')
+
+    # ********** Solution ends here ********** #
+
+    # Stop tracking time and memory
+    snapshot = tracemalloc.take_snapshot()
+    end_time = time()
+    tracemalloc.stop()
+
+    # Print time elapsed and memory used
+    print_time_elapsed(start_time, end_time)
+    print_memory_usage_report(snapshot)
 
 
 if __name__ == '__main__':
-    start = time()
     main()
-    print(f'Time: {time() - start}s')

@@ -9,10 +9,18 @@ By considering the terms in the Fibonacci sequence whose values do not exceed fo
 find the sum of the even-valued terms.
 '''
 
+from helpers import print_memory_usage_report, print_time_elapsed
 from time import time
+import tracemalloc
 
 
 def main():
+    # Keep track of time elapsed and memory used
+    start_time = time()
+    tracemalloc.start()
+
+    # ********** Solution begins here ********** #
+
     a = 0
     b = 1
     c = 0
@@ -26,10 +34,19 @@ def main():
         a = b
         b = c
 
-    print(f'Sum of even-valued terms < 4,000,000: {total_of_evens}')
+    print(f'Sum of even-valued terms < 4,000,000:\n\n\t{total_of_evens}\n')
+
+    # ********** Solution ends here ********** #
+
+    # Stop tracking time and memory
+    snapshot = tracemalloc.take_snapshot()
+    end_time = time()
+    tracemalloc.stop()
+
+    # Print time elapsed and memory used
+    print_time_elapsed(start_time, end_time)
+    print_memory_usage_report(snapshot)
 
 
 if __name__ == '__main__':
-    start = time()
     main()
-    print(f'Time: {time() - start}s')

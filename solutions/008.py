@@ -27,12 +27,21 @@ Find the thirteen adjacent digits in the 1000-digit number that have the greates
 What is the value of this product?
 '''
 
+from helpers import print_memory_usage_report, print_time_elapsed
+from time import time
+import tracemalloc
+
 from functools import reduce
 from operator import mul
-from time import time
 
 
 def main():
+    # Keep track of time elapsed and memory used
+    start_time = time()
+    tracemalloc.start()
+
+    # ********** Solution begins here ********** #
+
     thousand_digit_number = '''
         73167176531330624919225119674426574742355349194934
         96983520312774506326239578318016984801869478851843
@@ -67,10 +76,19 @@ def main():
         )
         index += 1
 
-    print(f'Greatest product of thirteen adjacent digits: {max_product}')
+    print(f'Greatest product of thirteen adjacent digits:\n\n\t{max_product}\n')
+
+    # ********** Solution ends here ********** #
+
+    # Stop tracking time and memory
+    snapshot = tracemalloc.take_snapshot()
+    end_time = time()
+    tracemalloc.stop()
+
+    # Print time elapsed and memory used
+    print_time_elapsed(start_time, end_time)
+    print_memory_usage_report(snapshot)
 
 
 if __name__ == '__main__':
-    start = time()
     main()
-    print(f'Time: {time() - start}s')

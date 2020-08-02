@@ -1,16 +1,27 @@
 #!/usr/bin/python3
 '''
-2520 is the smallest number that can be divided by each of the numbers from 1 to 10 without any remainder.
+2520 is the smallest number that can be divided by each of the numbers
+from 1 to 10 without any remainder.
 
-What is the smallest positive number that is evenly divisible by all of the numbers from 1 to 20?
+What is the smallest positive number that is evenly divisible
+by all of the numbers from 1 to 20?
 '''
+
+from helpers import print_memory_usage_report, print_time_elapsed
+from time import time
+import tracemalloc
 
 from functools import reduce
 import operator
-from time import time
 
 
 def main():
+    # Keep track of time elapsed and memory used
+    start_time = time()
+    tracemalloc.start()
+
+    # ********** Solution begins here ********** #
+
     '''
     The idea: we need to mutliply every number between 1 and 20 into our target number. Equivalently,
     we need to be able to describe each number between 1 and 20 as the product of numbers in the prime
@@ -43,10 +54,19 @@ def main():
     ]
     smallest = reduce(operator.mul, prime_factors)
 
-    print(f'Smallest positive number evenly divisible by all numbers from 1 to 20: {smallest}')
+    print(f'Smallest positive number evenly divisible by all numbers from 1 to 20:\n\n\t{smallest}\n')
+
+    # ********** Solution ends here ********** #
+
+    # Stop tracking time and memory
+    snapshot = tracemalloc.take_snapshot()
+    end_time = time()
+    tracemalloc.stop()
+
+    # Print time elapsed and memory used
+    print_time_elapsed(start_time, end_time)
+    print_memory_usage_report(snapshot)
 
 
 if __name__ == '__main__':
-    start = time()
     main()
-    print(f'Time: {time() - start}s')

@@ -5,11 +5,20 @@ The sum of the primes below 10 is 2 + 3 + 5 + 7 = 17.
 Find the sum of all the primes below two million.
 '''
 
-from math import floor, sqrt
+from helpers import print_memory_usage_report, print_time_elapsed
 from time import time
+import tracemalloc
+
+from math import floor, sqrt
 
 
 def main():
+    # Keep track of time elapsed and memory used
+    start_time = time()
+    tracemalloc.start()
+
+    # ********** Solution begins here ********** #
+
     LIMIT = 2_000_000
     prime_or_not = [True for _ in range(LIMIT)]
     prime_or_not[0] = False
@@ -27,10 +36,19 @@ def main():
         if prime_or_not[num]:
             sum_of_primes += num
 
-    print(f'Sum of primes below two million: {sum_of_primes}')
+    print(f'Sum of primes below two million:\n\n\t{sum_of_primes}\n')
+
+    # ********** Solution ends here ********** #
+
+    # Stop tracking time and memory
+    snapshot = tracemalloc.take_snapshot()
+    end_time = time()
+    tracemalloc.stop()
+
+    # Print time elapsed and memory used
+    print_time_elapsed(start_time, end_time)
+    print_memory_usage_report(snapshot)
 
 
 if __name__ == '__main__':
-    start = time()
     main()
-    print(f'Time: {time() - start}s')
