@@ -38,56 +38,49 @@ from functools import reduce
 from operator import mul
 
 
-num_array = []
+GRID_SIZE = 20
+num_grid = []
 
 
-def _down(row: int, col: int) -> int:
-    #  print("Multiplying:", [num_array[row + r][col] for r in range(4)])
+def _get_grid_value(row: int, col: int) -> int:
+    '''Get the value of the grid at (row, col), or 1 if (row, col) is an invalid location.'''
+    if row < 0 or col < 0 or row >= GRID_SIZE or col >= GRID_SIZE:
+        return 1
+
+    return num_grid[row][col]
+
+
+def _straight(row: int, col: int, direction: str) -> int:
+    '''Get the product of four adjacent numbers starting at (row, col) and moving "towards" direction.
+
+    Args:
+        row (int): The row at which to begin
+        col (int): The column at which to begin
+        direction (str): Either 'S' (for South) or 'E' (for East)
+    '''
     return reduce(
         mul,
         [
-            num_array[row + r][col]
-            for r in range(4)
-            if row + r < 20
+            _get_grid_value(row + delta, col) if direction == 'S' else _get_grid_value(row, col + delta)
+            for delta in range(4)
         ],
         1
     )
 
 
-def _right(row: int, col: int) -> int:
-    #  print("Multiplying:", [num_array[row][col + c] for c in range(4)])
+def _diagonal(row: int, col: int, direction: str) -> int:
+    '''Get the product of four adjacent numbers starting at (row, col) and moving "towards" direction.
+
+    Args:
+        row (int): The row at which to begin
+        col (int): The column at which to begin
+        direction (str): Either 'SE' (for Southeast) or 'NE' (for Northeast)
+    '''
     return reduce(
         mul,
         [
-            num_array[row][col + c]
-            for c in range(4)
-            if col + c < 20
-        ],
-        1
-    )
-
-
-def _down_right(row: int, col: int) -> int:
-    #  print("Multiplying:", [num_array[row + d][col + d] for d in range(4)])
-    return reduce(
-        mul,
-        [
-            num_array[row + d][col + d]
+            _get_grid_value(row + d, col + d) if direction == 'SE' else _get_grid_value(row - d, col + d)
             for d in range(4)
-            if row + d >= 0 and col + d >= 0 and row + d < 20 and col + d < 20
-        ],
-        1
-    )
-
-
-def _up_right(row: int, col: int) -> int:
-    #  print("Multiplying:", [num_array[row - d][col - d] for d in range(4)])
-    return reduce(
-        mul,
-        [
-            num_array[row - d][col - d]
-            for d in range(4)
-            if row - d >= 0 and col - d >= 0 and row - d < 20 and col - d < 20
         ],
         1
     )
@@ -99,9 +92,9 @@ def main():
     tracemalloc.start()
 
     # ********** Solution begins here ********** #
-    # Load number array
-    global num_array
-    num_array = '''
+    # Load number grid
+    global num_grid
+    num_grid = '''
         08 02 22 97 38 15 00 40 00 75 04 05 07 78 52 12 50 77 91 08
         49 49 99 40 17 81 18 57 60 87 17 40 98 43 69 48 04 56 62 00
         81 49 31 73 55 79 14 29 93 71 40 67 53 88 30 03 49 13 36 65
@@ -124,40 +117,27 @@ def main():
         01 70 54 71 83 51 54 69 16 92 33 48 61 43 52 01 89 19 67 48
     '''
 
-    # Format number array into 20 arrays of length 20
-    num_array = num_array.split()
-    num_array = [
+    # Format number grid into GRID_SIZE lists of length GRID_SIZE
+    num_grid = num_grid.split()
+    num_grid = [
         [
             int(num)
-            for num in num_array[index: index + 20]
+            for num in num_grid[index: index + GRID_SIZE]
         ]
-        for index in range(0, 400, 20)
+        for index in range(0, GRID_SIZE ** 2, GRID_SIZE)
     ]
 
-    # Iterate over every position, checking:
-    # - The four adjacent numbers starting at position, moving down
-    # - The four adjacent numbers starting at position, moving right
-    # - The four adjacent numbers starting at posiiton, moving down-right
-    # - The four adjaecnt numbers starting at position, moving up-right
-
-    print(_down(0, 0))
-    print(_right(0, 0))
-    print(_down_right(0, 0))
-    print(_up_right(19, 19))
-
+    # Iterate over every position, checking down, right, down-right (Southeast) and up-right (Northeast)
     max_product = 0
-    for row in range(20):
-        for col in range(20):
-            pre_max = max_product
+    for row in range(GRID_SIZE):
+        for col in range(GRID_SIZE):
             max_product = max(
                 max_product,
-                _down(row, col),
-                _right(row, col),
-                _down_right(row, col),
-                _up_right(row, col)
+                _straight(row, col, 'S'),
+                _straight(row, col, 'E'),
+                _diagonal(row, col, 'SE'),
+                _diagonal(row, col, 'NE')
             )
-            if max_product != pre_max:
-                print(f"Changed at {row} {col}")
 
     print(f'Greatest product of four adjacent numbers:\n\n\t{max_product}\n')
 
