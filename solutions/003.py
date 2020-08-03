@@ -30,7 +30,6 @@ def main():
 
     # ********** Solution begins here ********** #
 
-    largest_prime_factor = None
     GIVEN_NUMBER = 600851475143
     for potential_factor in range(floor(sqrt(GIVEN_NUMBER)) + 1, 1, -1):
         if GIVEN_NUMBER % potential_factor == 0 and _is_prime(potential_factor):
