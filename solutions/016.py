@@ -10,15 +10,6 @@ from time import time
 import tracemalloc
 
 
-def _sum_digits(num: int) -> int:
-    sum_of_digits = 0
-    while num > 0:
-        sum_of_digits += num % 10
-        num = num // 10
-
-    return sum_of_digits
-
-
 def main():
     # Keep track of time elapsed and memory used
     start_time = time()
@@ -26,7 +17,7 @@ def main():
 
     # ********** Solution begins here ********** #
 
-    sum_of_digits = _sum_digits(2 ** 1000)
+    sum_of_digits = sum(map(int, str(2 ** 1000)))
 
     print(f'Sum of digits of 2^1000:\n\n\t{sum_of_digits}\n')
 
