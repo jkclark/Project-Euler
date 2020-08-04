@@ -71,7 +71,7 @@ def main():
             longest_sequence_length = sequence_length
             longest_sequence_num = num
 
-    print(f'The number under one million with the longest Collatz sequence:\n\n\t{longest_sequence_num}\n')
+    print(f'Number under one million with the longest Collatz sequence:\n\n\t{longest_sequence_num}\n')
 
     # ********** Solution ends here ********** #
 
