@@ -24,7 +24,49 @@ def main():
 
     # ********** Solution begins here ********** #
 
-    print(f':\n\n\t{None}\n')
+    DIGITS = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine']
+    TEENS = [
+        '', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen',
+        'sixteen', 'seventeen', 'eighteen', 'nineteen'
+    ]
+    TENS = ['', 'ten', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety']
+
+    total_letters = 0
+    for num in range(1000):
+        written_out = ''
+
+        if num > 99:
+            total_letters += len(DIGITS[num // 100]) + len('hundred')
+            written_out += DIGITS[num // 100] + ' hundred'
+
+            # The spelling will include 'and'
+            if num % 100 != 0:
+                total_letters += 3
+                written_out += ' and '
+
+            num %= 100
+
+        # At this point, 0 <= num <= 99
+
+        if num < 20 and num > 10:
+            total_letters += len(TEENS[num - 10])
+            written_out += TEENS[num - 10]
+
+        else:
+            if num >= 20 or num == 10:
+                total_letters += len(TENS[num // 10])
+                written_out += TENS[num // 10]
+
+                num %= 10
+
+            total_letters += len(DIGITS[num])
+            written_out += DIGITS[num]
+
+        print(written_out)
+
+    total_letters += len('one thousand')
+
+    print(f'Letters used in spelling out all integers from 1 to 1000 (inclusive):\n\n\t{total_letters}\n')
 
     # ********** Solution ends here ********** #
 
