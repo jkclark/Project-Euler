@@ -38,7 +38,6 @@ def main():
     while year < 2001:
         # Check if day/month/year is a Sunday on the first of the month
         if day == 1 and day_of_the_week == 0:
-            print(f"Sunday on first: {day}/{month}/{year}")
             sundays_on_day_1 += 1
 
         # Increment the day by one
