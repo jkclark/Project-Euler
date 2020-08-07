@@ -17,7 +17,7 @@ def main():
 
     # ********** Solution begins here ********** #
 
-    sum_of_digits = sum(map(int, str(2 ** 1000)))
+    sum_of_digits = sum((int(num) for num in str(2 ** 1000)))
 
     print(f'Sum of digits of 2^1000:\n\n\t{sum_of_digits}\n')
 
