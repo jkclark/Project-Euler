@@ -18,10 +18,6 @@ from time import time
 import tracemalloc
 
 
-def _get_letter_value(char: str) -> int:
-    return ord(char.lower()) - ord('a') + 1
-
-
 def main():
     # Keep track of time elapsed and memory used
     start_time = time()
@@ -32,13 +28,13 @@ def main():
     with open('022_names.txt', 'r') as names_file:
         names = names_file.read()
 
-    names = [name.strip().replace('"', '') for name in sorted(names.split(','))]
+    names = [name.strip().replace('\"', '') for name in sorted(names.split(','))]
 
     total_score = 0
     for index, name in enumerate(names):
         sum_of_letter_values = 0
         for letter in name:
-            sum_of_letter_values += _get_letter_value(letter)
+            sum_of_letter_values += ord(letter.lower()) - ord('a') + 1
         total_score += sum_of_letter_values * (index + 1)
 
     print(f'Sum of all names scores in the file:\n\n\t{total_score}\n')
