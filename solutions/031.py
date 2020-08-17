@@ -23,20 +23,15 @@ def main():
     # ********** Solution begins here ********** #
 
     COINS = [1, 2, 5, 10, 20, 50, 100, 200]
-    ways = [{0}]
+    TARGET = 200
 
-    for num in range(1, 201):
-        ways_for_num = set()
-        for index, coin in enumerate(COINS):
-            if coin > num:
-                break
+    ways = [1] + [0] * TARGET
 
-            for way in ways[num - coin]:
-                ways_for_num.add(10 ** index + way)
+    for coin in COINS:
+        for num in range(coin, TARGET + 1):
+            ways[num] += ways[num - coin]
 
-        ways.append(ways_for_num)
-
-    print(f'Number of ways £2 be made using any number of coins:\n\n\t{len(ways[-1])}\n')
+    print(f'Number of ways £2 be made using any number of coins:\n\n\t{ways[-1]}\n')
 
     # ********** Solution ends here ********** #
 
