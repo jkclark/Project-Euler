@@ -34,6 +34,8 @@ def main():
                 prime_or_not[multiple] = False
 
     # Check all rotations of every number, stopping for a number if a rotation isn't prime
+    # NOTE: We could probably speed this up by checking if any of the digits 0,2,4,5,6,8 are
+    #       in the number, since if true, at least one rotation will be composite.
     count_circular_primes = 0
     for num in range(LIMIT):
         num_string = str(num)
