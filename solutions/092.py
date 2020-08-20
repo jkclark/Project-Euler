@@ -69,8 +69,7 @@ def main():
         _get_number_chain_end(num)
         chains_ending_in_89 += chain_endings[num] == 89
 
-    LIMIT = 10_000_000
-    for num in range(568, LIMIT):
+    for num in range(568, 10_000_000):
         chains_ending_in_89 += chain_endings[_get_sum_of_squares_of_digits(num)] == 89
 
     print(f'Numbers < 10,000,000 whose square digit chains end in 89:\n\n\t{chains_ending_in_89}\n')
