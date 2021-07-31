@@ -29,7 +29,7 @@ def main():
 
     # ********** Solution begins here ********** #
 
-    LIMIT = 1_000_000
+    LIMIT = 10_000_000
     prime_or_not = [True for _ in range(LIMIT)]
     prime_or_not[0] = False
     prime_or_not[1] = False
@@ -50,15 +50,12 @@ def main():
             if number % 2 == 1:
                 odd_composites.append(number + 2)
 
-    print(primes[:10])
-    print(odd_composites[:10])
-
-    for odd_composite in odd_composites:
+    smallest_qualifying = None
+    for odd_composite in odd_composites[500_000:]:
         for prime in primes:
-            if prime > num:
-                continue
-            print(sqrt((num - prime) / 2))
-            if sqrt((num - prime) / 2).is_integer():
+            if prime >= odd_composite:
+                break
+            if sqrt((odd_composite - prime) / 2).is_integer():
                 break
         else:
             smallest_qualifying = odd_composite
