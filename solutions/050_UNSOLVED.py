@@ -14,6 +14,8 @@ from helpers import print_memory_usage_report, print_time_elapsed
 from time import time
 import tracemalloc
 
+from math import floor, sqrt
+
 
 def main():
     # Keep track of time elapsed and memory used
@@ -21,6 +23,27 @@ def main():
     tracemalloc.start()
 
     # ********** Solution begins here ********** #
+
+    LIMIT = 1_000_000
+    prime_or_not = [True for _ in range(LIMIT)]
+    prime_or_not[0] = False
+    prime_or_not[1] = False
+
+    # Sieve of Eratosthenes
+    for num in range(2, floor(sqrt(LIMIT)) + 1):
+        if prime_or_not[num]:
+            for multiple in range(num * num, LIMIT, num):
+                prime_or_not[multiple] = False
+
+    # Get a list of prime numbers < LIMIT
+    primes = [number for number, is_prime in enumerate(prime_or_not) if is_prime]
+    print(len(primes))
+
+    # Once we have a prime expressed as the sum of consecutive primes,
+    # we never need to check a sequence of primes that long or shorter.
+    most_consecutive_primes = 21  # Given in problem
+    corresponding_prime = 953     # Given in problem
+
 
     print(f':\n\n\t{None}\n')
 
