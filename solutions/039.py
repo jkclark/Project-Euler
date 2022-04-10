@@ -107,6 +107,7 @@ def main():
 
     It would seem that we can check c where p/3 < c < p/2.
     '''
+
     max_perimeter = None
     max_solutions = 0
 
