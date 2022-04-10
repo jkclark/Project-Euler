@@ -19,24 +19,17 @@ def _is_right_triangle(a: int, b: int, c: int) -> bool:
     return a ** 2 + b ** 2 == c ** 2
 
 
-def _find_a_b_given_c(c: int):
+def _find_a_b_given_c_p(c: int, p: int):
     '''Find the integer pair (a, b) given hypotenuse length c, if it exists.'''
     # Binary search
-    # TODO: This is maybe on the right track but definitely incorrect. It also doesn't
-    #       yet handle dealing with integers/decimals.
-    low = 0
-    high = c ** 2 / 2
-    short = long = c ** 2 / 4
-    while low < high and not _is_right_triangle(short, long, c):
-        if short ** 2 + long ** 2 < c ** 2:  # Sum is too small, short and long need to be further apart
-            high = short
-        elif short ** 2 + long ** 2 > c ** 2:
-            low = short
+    # TODO: Implement binary search
 
-        short = (high - low) / 2
+    # Linear search
+    for a in range(1, c):
+        if _is_right_triangle(a, (p - c - a), c):
+            return True
 
-    print(f'Triple: {(short, sqrt(c ** 2 - short ** 2), c)}')
-    return
+    return False
 
 def _find_right_triangles_given_perimeter(perimeter: int) -> int:
     '''Find the number of solutions for right triangle lengths given the triangle's perimeter.'''
@@ -49,7 +42,7 @@ def _find_right_triangles_given_perimeter(perimeter: int) -> int:
     # Well, then
     solutions = 0
     for c in range(floor(perimeter / 3), ceil(perimeter / 2) + 1):
-        if _find_a_b_given_c(c):
+        if _find_a_b_given_c_p(c, perimeter):
             solutions += 1
 
     return solutions
@@ -118,7 +111,7 @@ def main():
     max_solutions = 0
 
     for perimeter in range(1, 1001):
-        if number_of_solutions := _find_right_triangles_given_perimeter(perimeter) > max_solutions:
+        if (number_of_solutions := _find_right_triangles_given_perimeter(perimeter)) > max_solutions:
             max_perimeter = perimeter
             max_solutions = number_of_solutions
 
