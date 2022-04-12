@@ -22,12 +22,18 @@ def _is_right_triangle(a: int, b: int, c: int) -> bool:
 def _find_a_b_given_c_p(c: int, p: int):
     '''Find the integer pair (a, b) given hypotenuse length c, if it exists.'''
     # Binary search
-    # TODO: Implement binary search
-
-    # Linear search
-    for a in range(1, c):
-        if _is_right_triangle(a, (p - c - a), c):
+    low = 1
+    high = ceil((p - c) / 2)
+    while low < high - 1:
+        mid = low + ceil((high - low) / 2)
+        other_side = p - c - mid
+        left_side_of_equation = mid ** 2 + other_side ** 2
+        if left_side_of_equation == c ** 2:
             return True
+        elif left_side_of_equation < c ** 2:
+            high = mid
+        else:
+            low = mid
 
     return False
 

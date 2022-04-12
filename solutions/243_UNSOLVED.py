@@ -43,9 +43,10 @@ def main():
 
     MAX_RESILIENCE = 15499 / 94744
     #  denominator = 12
-    denominator = 104832  # Algo was too slow first run, got here and stopped
+    #  denominator = 104832  # Algo was too slow first run, got here and stopped
+    #  denominator = 38_110_000  # Algo was too slow first run, got here and stopped
+    denominator = 38_111_000  # Algo was too slow first run, got here and stopped
     while True:
-        print(f'Denominator: {denominator}')
         resilient_count = 0
         max_resilients_allowed = ceil(MAX_RESILIENCE * denominator)
 
@@ -56,11 +57,13 @@ def main():
                 if resilient_count > max_resilients_allowed:
                     break
 
+        print(f"Denom/Resilience: {denominator}/{resilient_count / (denominator - 1)}")
         if resilient_count / (denominator - 1) < MAX_RESILIENCE:
             smallest_denominator = denominator
             break
 
-        denominator += 2
+        #  denominator += 2
+        denominator += 1
 
     print(f'The smallest denominator having a resilience R(d) < 15499/94744:\n\n\t{smallest_denominator}\n')
 
