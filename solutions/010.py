@@ -1,9 +1,9 @@
 #!/usr/bin/python3
-'''
+"""
 The sum of the primes below 10 is 2 + 3 + 5 + 7 = 17.
 
 Find the sum of all the primes below two million.
-'''
+"""
 
 from helpers import print_memory_usage_report, print_time_elapsed
 from time import time
@@ -31,12 +31,9 @@ def main():
                 prime_or_not[multiple] = False
 
     # Add up the value of each prime
-    sum_of_primes = 0
-    for num in range(LIMIT):
-        if prime_or_not[num]:
-            sum_of_primes += num
+    sum_of_primes = sum(index for index, value in enumerate(prime_or_not) if value)
 
-    print(f'Sum of primes below two million:\n\n\t{sum_of_primes}\n')
+    print(f"Sum of primes below two million:\n\n\t{sum_of_primes}\n")
 
     # ********** Solution ends here ********** #
 
@@ -50,5 +47,5 @@ def main():
     print_memory_usage_report(snapshot)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
