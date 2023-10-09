@@ -1,24 +1,45 @@
+"""This module contains useful functions for all solutions."""
 import tracemalloc
+from time import time
 
 
-def _format_bytes_humanized(num: int, suffix: str = 'B') -> str:
-    for unit in ['', 'Ki', 'Mi']:
-        if abs(num) < 1024.0:
-            return f'{round(num, 3)} {unit}{suffix}'
-        num /= 1024.0
-    return f'{round(num, 3)} Gi{suffix}'
+def measure_time_and_memory(func):
+    """A decorator for measuring a function's duration and memory usage."""
+
+    def wrapper():
+        # Keep track of time elapsed and memory used
+        start_time = time()
+        tracemalloc.start()
+
+        func()
+
+        # Stop tracking time and memory
+        snapshot = tracemalloc.take_snapshot()
+        end_time = time()
+        tracemalloc.stop()
+
+        # Print time elapsed and memory used
+        print_time_elapsed(start_time, end_time)
+        print_memory_usage_report(snapshot)
+
+    return wrapper
 
 
-def print_memory_usage_report(snapshot: tracemalloc.Snapshot, line_breakdown: int = 0):
-    stats = snapshot.statistics('filename')
-    print(f'Memory: {_format_bytes_humanized(stats[0].size)}')
-
-    if line_breakdown:
-        print(f'{line_breakdown} most expensive line{"" if line_breakdown == 1 else "s"}:')
-        stats = snapshot.statistics('lineno')
-        for stat in stats[:line_breakdown]:
-            print(f'  {str(stat.traceback).split(":")[-1]}: {_format_bytes_humanized(stat.size)}')
+def print_memory_usage_report(snapshot: tracemalloc.Snapshot):
+    """Print the amount of memory allocated in the snapshot."""
+    stats = snapshot.statistics("filename")
+    print(f"Memory: {_format_bytes_humanized(stats[0].size)}")
 
 
 def print_time_elapsed(start: float, end: float):
-    print(f'Time: {round(end - start, 3)}s')
+    """Print the difference between start and end, measured in seconds."""
+    print(f"Time: {round(end - start, 3)}s")
+
+
+def _format_bytes_humanized(num: int, suffix: str = "B") -> str:
+    """Return a human-readable string representing a number of bytes."""
+    for unit in ["", "Ki", "Mi"]:
+        if abs(num) < 1024.0:
+            return f"{round(num, 3)} {unit}{suffix}"
+        num /= 1024.0
+    return f"{round(num, 3)} Gi{suffix}"
