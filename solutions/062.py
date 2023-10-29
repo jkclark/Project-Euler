@@ -10,6 +10,7 @@ Find the smallest cube for which exactly five permutations of its digits are cub
 from collections import defaultdict
 import math
 from typing import Tuple
+
 from helpers import measure_time_and_memory
 
 
