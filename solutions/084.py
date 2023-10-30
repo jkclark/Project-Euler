@@ -59,8 +59,10 @@ these three most popular squares can be listed with the six-digit modal string:
 If, instead of using two 6-sided dice, two 4-sided dice are used, find the six-digit modal string.
 """
 
+from functools import partial
 import random
 from typing import Callable, List, Tuple
+
 from helpers import measure_time_and_memory
 
 
@@ -125,32 +127,63 @@ def main():
 
     board = Board(squares)
 
-    num_dice = 2
     dice_sides = 6
     turn_limit = 10_000
-
     for _ in range(turn_limit):
-        board.do_turn(num_dice, dice_sides)
+        board.do_turn(dice_sides)
 
     print(f":\n\n\t{None}\n")
+
+
+# TODO:
+# - Finish filling out decks, including non-movement cards
+# - Shuffle decks at beginning
+# - Confirm percentages match those given in problem
+# - Use 4-sided dice instead
 
 
 class Board:
     """Represents a Monopoly board."""
 
     def __init__(self, squares: List["Square"]) -> None:
-        self.player_location = 0
         self.squares = squares
+        self.jail_location = self.get_jail_location()
+        self.railway_locations = self.get_company_locations("R")
+        self.utility_locations = self.get_company_locations("U")
         self.decks = {
-            "community chest": Deck([lambda x: 0]),
-            "chance": Deck([lambda x: 0]),
-            "go to jail": Deck([lambda x: 0]),
+            "community chest": Deck([lambda location: 0]),
+            "chance": Deck(
+                [
+                    lambda location: 0,
+                    partial(self.get_next_company_location, self.railway_locations),
+                    partial(self.get_next_company_location, self.railway_locations),
+                    partial(self.get_next_company_location, self.utility_locations),
+                ]
+            ),
+            "go to jail": Deck([lambda location: self.jail_location]),
         }
 
-    def do_turn(self, num_dice: int, dice_sides: int) -> None:
+        self.player_location = 0
+        self.doubles_streak = 0
+
+    def do_turn(self, dice_sides: int) -> None:
         """Simulate one turn."""
         # Determine roll
-        roll = self.roll_x_n_sided_dice(num_dice, dice_sides)
+        roll = self.roll_n_sided_dice(dice_sides)
+
+        # Deal with doubles
+        if roll[0] == roll[1]:
+            self.doubles_streak += 1
+
+            # Go to jail for 3 consecutive doubles
+            if self.doubles_streak >= 3:
+                self.player_location = self.decks["go to jail"].get_next_card()(
+                    self.player_location
+                )
+                self.squares[self.player_location].times_landed_on += 1
+
+                # Reset doubles streak
+                self.doubles_streak = 0
 
         # Determine new location
         self.player_location = (self.player_location + sum(roll)) % len(self.squares)
@@ -164,7 +197,6 @@ class Board:
             # If this square has no deck, we're done
             try:
                 deck = self.decks[self.squares[self.player_location].deck]
-                print("Deck found!")
             except KeyError:
                 break
 
@@ -174,10 +206,39 @@ class Board:
         # Add one to new square's "landed on" count
         self.squares[self.player_location].times_landed_on += 1
 
+    def get_jail_location(self):
+        """Get the location of the jail square."""
+        for index, square in enumerate(self.squares):
+            if square.name == "JAIL":
+                return index
+
+    def get_company_locations(self, prefix: str) -> List[int]:
+        """Get the indexes of each square whose name starts with the given prefix."""
+        return [
+            index
+            for index, square in enumerate(self.squares)
+            if square.name.startswith(prefix)
+        ]
+
+    def get_next_company_location(
+        self,
+        company_locations: int,
+        player_location: int,
+    ) -> int:
+        """Get the location of the next company square.
+
+        company_locations should be in increasing order.
+        """
+        for company_location in company_locations:
+            if player_location < company_location:
+                return company_location
+
+        return company_locations[0]
+
     @staticmethod
-    def roll_x_n_sided_dice(num_dice: int, sides: int) -> Tuple[int]:
-        """Roll x n-sided dice and return the sum of their values."""
-        return tuple(random.randint(1, sides) for _ in range(num_dice))
+    def roll_n_sided_dice(sides: int) -> Tuple[int]:
+        """Roll two n-sided dice and return the sum of their values."""
+        return (random.randint(1, sides), random.randint(1, sides))
 
 
 class Square:
@@ -211,7 +272,7 @@ class Deck:
         return next_card
 
     def shuffle(self) -> None:
-        """Shuffle this deck."""
+        """Shuffle the deck."""
         random.shuffle(self.cards)
 
 
