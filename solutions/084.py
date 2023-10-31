@@ -127,44 +127,64 @@ def main():
 
     board = Board(squares)
 
-    dice_sides = 6
-    turn_limit = 10_000
+    dice_sides = 4
+    turn_limit = 1_000_000
     for _ in range(turn_limit):
         board.do_turn(dice_sides)
 
-    print(f":\n\n\t{None}\n")
+    squares_by_popularity = sorted(
+        [(square.id_number, square.times_landed_on) for square in squares],
+        key=lambda s: s[1],
+        reverse=True,
+    )
 
-
-# TODO:
-# - Finish filling out decks, including non-movement cards
-# - Shuffle decks at beginning
-# - Confirm percentages match those given in problem
-# - Use 4-sided dice instead
+    print(
+        f"6-digit string resulting from using two 4-sided dice:\n\n\t\
+        {''.join([str(square[0]) for square in squares_by_popularity][:3])}\n"
+    )
 
 
 class Board:
     """Represents a Monopoly board."""
 
     def __init__(self, squares: List["Square"]) -> None:
+        self.player_location = 0
+        self.doubles_streak = 0
+
         self.squares = squares
+
+        # Prepare decks
+        def stay_still(location):
+            return location
+
         self.jail_location = self.get_jail_location()
         self.railway_locations = self.get_company_locations("R")
         self.utility_locations = self.get_company_locations("U")
         self.decks = {
-            "community chest": Deck([lambda location: 0]),
+            "community chest": Deck(
+                [lambda location: 0, lambda location: 10, *[stay_still] * 14]
+            ),
             "chance": Deck(
                 [
-                    lambda location: 0,
+                    lambda location: 0,  # GO
+                    lambda location: 10,  # JAIL
+                    lambda location: 11,  # C1
+                    lambda location: 24,  # E3
+                    lambda location: 39,  # H2
+                    lambda location: 5,  # R1
                     partial(self.get_next_company_location, self.railway_locations),
                     partial(self.get_next_company_location, self.railway_locations),
                     partial(self.get_next_company_location, self.utility_locations),
+                    lambda location: (location - 3) % len(self.squares),
+                    *[stay_still] * 6,
                 ]
             ),
             "go to jail": Deck([lambda location: self.jail_location]),
         }
 
-        self.player_location = 0
-        self.doubles_streak = 0
+        # Shuffle decks
+        for deck in self.decks.values():
+            deck.shuffle()
 
     def do_turn(self, dice_sides: int) -> None:
         """Simulate one turn."""
@@ -177,13 +197,15 @@ class Board:
 
             # Go to jail for 3 consecutive doubles
             if self.doubles_streak >= 3:
-                self.player_location = self.decks["go to jail"].get_next_card()(
-                    self.player_location
-                )
+                self.player_location = self.jail_location
                 self.squares[self.player_location].times_landed_on += 1
 
                 # Reset doubles streak
                 self.doubles_streak = 0
+
+                return
+        else:
+            self.doubles_streak = 0
 
         # Determine new location
         self.player_location = (self.player_location + sum(roll)) % len(self.squares)
@@ -200,7 +222,7 @@ class Board:
             except KeyError:
                 break
 
-            # Go to square indicated by card, if any
+            # Go to square indicated by card
             self.player_location = deck.get_next_card()(self.player_location)
 
         # Add one to new square's "landed on" count
