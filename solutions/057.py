@@ -18,12 +18,16 @@ from helpers import measure_time_and_memory
 
 @measure_time_and_memory
 def main():
-    """Find the number of expansions containing a numerator longer than the denominator."""
+    """Find the number of expansions containing a numerator longer than the denominator.
+
+    I think there is a simpler way that doesn't involve working with so many fractions,
+    but this is what I came up with.
+    """
     prev_part = Fraction(0, 1)
     qualifying_expansions = 0
     for _ in range(1000):
         # Find current expansion's value
-        new_prev_part = Fraction(Fraction(1, 1), Fraction(2, 1) + prev_part)
+        new_prev_part = Fraction(1, Fraction(2, 1) + prev_part)
         result = Fraction(1, 1) + new_prev_part
 
         # Increment counter if numerator longer than denominator
@@ -47,9 +51,12 @@ class Fraction:
     def __init__(
         self, numerator: Union[int, "Fraction"], denominator: Union[int, "Fraction"]
     ) -> None:
-        # TODO: Refactor this, this is gross
-        # We need to resolve this Fraction so that it's (int / int)
-        if isinstance(numerator, Fraction) or isinstance(denominator, Fraction):
+        if isinstance(numerator, int) and isinstance(denominator, int):
+            self.numerator = numerator
+            self.denominator = denominator
+
+        # If either numerator or denominator is a Fraction, simplify
+        else:
             if isinstance(numerator, int):
                 numerator = Fraction(numerator, 1)
 
@@ -60,10 +67,6 @@ class Fraction:
 
             self.numerator = simplified.numerator
             self.denominator = simplified.denominator
-
-        else:
-            self.numerator = numerator
-            self.denominator = denominator
 
     @property
     def numerator_length(self):
@@ -94,7 +97,10 @@ class Fraction:
         )
 
     def __repr__(self) -> str:
-        """Return a string representation of this Fraction."""
+        """Return a string representation of this Fraction.
+
+        Useful for debugging.
+        """
         return f"({self.numerator} / {self.denominator})"
 
 
