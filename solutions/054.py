@@ -63,7 +63,7 @@ from helpers import measure_time_and_memory
 @measure_time_and_memory
 def main():
     """Calculate the number of hands won by player 1."""
-    with open("./solutions/poker.txt", "r", encoding="utf-8") as poker_hands_file:
+    with open("./solutions/054_poker.txt", "r", encoding="utf-8") as poker_hands_file:
         hands = poker_hands_file.readlines()
 
     player_1_wins = 0
