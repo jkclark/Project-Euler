@@ -21,24 +21,36 @@ from helpers import measure_time_and_memory
 @measure_time_and_memory
 def main():
     """Find the number of elements in the set of reduced proper fractions for d <= 10^6."""
-    # limit = 1_000_000
-    limit = 8
+    limit = 1_000_000
     primes = get_primes_up_to_limit(limit)
     prime_factorizations = get_distinct_prime_factors_of_nums_up_to_limit(limit, primes)
     nums_to_multiples = get_multiples_of_nums_up_to_limit(primes, limit)
-    elements_count = 0
+    elements_count = limit - 1  # Count all of the (1/d)'s (limit / limit is invalid)
 
     for numerator in range(2, limit):  # limit will never be a numerator
+        if numerator % 10_000 == 0:
+            print(f"Doing numerator = {numerator}")
+
         # Consider the total number of possible denominators for this numerator
+        # (All numbers less than numerator cannot be a denominator)
         num_denominators = limit - numerator
 
         # Find all distinct multiples of prime factors of this numerator
+        # NOTE: I think the problem is that there are 500,000 multiples of 2,
+        #       333,333 multiples of 3, etc. I tried using the smallest factor's multiples
+        #       as the "base set" for the union ("set()" below), but that didn't signifcantly
+        #       decrease the runtime.
         multiples_of_prime_factors = set().union(
             *[nums_to_multiples[factor] for factor in prime_factorizations[numerator]]
         )
 
         # None of the multiples of prime factors can be denominators for this numerator
-        num_denominators -= len(multiples_of_prime_factors)
+        # Filter out the multiples which are <= numerator
+        # NOTE: Even without this filter we are far too slow
+        valid_multiples = {
+            multiple for multiple in multiples_of_prime_factors if multiple > numerator
+        }
+        num_denominators -= len(valid_multiples)
 
         # Add to total (numerator / denominator) count
         elements_count += num_denominators
@@ -64,7 +76,6 @@ def get_primes_up_to_limit(limit: int) -> Set[int]:
     return {number for number, is_prime in enumerate(prime_or_not) if is_prime}
 
 
-@measure_time_and_memory
 def get_multiples_of_nums_up_to_limit(nums: Set[int], limit) -> Dict[int, Set[int]]:
     """Get multiples of all integers from 1 to limit, inclusive."""
     nums_to_multiples = {}
