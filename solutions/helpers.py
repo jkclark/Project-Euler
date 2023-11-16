@@ -6,12 +6,12 @@ from time import time
 def measure_time_and_memory(func):
     """A decorator for measuring a function's duration and memory usage."""
 
-    def wrapper():
+    def wrapper(*args, **kwargs):
         # Keep track of time elapsed and memory used
         start_time = time()
         tracemalloc.start()
 
-        func()
+        return_value = func(*args, **kwargs)
 
         # Stop tracking time and memory
         snapshot = tracemalloc.take_snapshot()
@@ -21,6 +21,8 @@ def measure_time_and_memory(func):
         # Print time elapsed and memory used
         print_time_elapsed(start_time, end_time)
         print_memory_usage_report(snapshot)
+
+        return return_value
 
     return wrapper
 
