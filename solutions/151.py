@@ -36,12 +36,11 @@ from helpers import measure_time_and_memory
 def main():
     """Find the expected number of times a single piece of paper is found in the envelope.
 
-    We're going to try a recursive approach where we statistically find the
-    exact expected value.  Basically, we're going to traverse a probability tree
-    where the value of each leaf node is the number of times exactly 1 piece of
-    paper is seen in the envelope, multiplied by the probability of getting
-    there. The probability of getting to any given node is the product of the
-    probabilities of getting to all of that node's parents.
+    Here we use a recursive approach to find the exact EV for any given envelope state. The
+    EV for an envelope is a weighted average of its children that includes whether or not
+    the child has exactly one piece of non-A5 paper in it.
+
+    Paper sizes are represented as multiples of 2, where A1 is 16 and A5 is 1.
     """
     # Memoization
     # Here were storing envelope states and their corresponding values
