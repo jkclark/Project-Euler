@@ -27,7 +27,6 @@ the envelope.
 
 Give your answer rounded to six decimal places using the format x.xxxxxx .
 """
-import random
 from typing import List
 
 from helpers import measure_time_and_memory
@@ -35,50 +34,63 @@ from helpers import measure_time_and_memory
 
 @measure_time_and_memory
 def main():
-    """Find the expected number of times a single piece of paper is found in the envelope."""
-    iterations = 50_000_000
-    total_single_paper_pulls = 0
-    for iteration in range(iterations):
-        if iteration % 1_000 == 0:
-            print(f"Doing iteration = {iteration}")
+    """Find the expected number of times a single piece of paper is found in the envelope.
 
-        week_single_paper_pulls = 0
+    We're going to try a recursive approach where we statistically find the
+    exact expected value.  Basically, we're going to traverse a probability tree
+    where the value of each leaf node is the number of times exactly 1 piece of
+    paper is seen in the envelope, multiplied by the probability of getting
+    there. The probability of getting to any given node is the product of the
+    probabilities of getting to all of that node's parents.
+    """
 
-        # 2 pieces of size A2 (A2 can be split 3 times before becoming A5)
-        envelope = [8, 8]  # Exclude first draw from envelope
+    total = 0
 
-        for _ in range(15):  # Exclude last draw from envelope
-            if len(envelope) == 1:
-                week_single_paper_pulls += 1
+    # NOTE: add probability as parameter, starting at 1
+    #       one potential point of inaccuracy/imprecision is multiplying
+    #       floats together. one option is to just multiply the denominator
+    #       through recursive calls as an integer, and just dividing it at the end
+    def dfs(envelope: List[int], probability: float, running_total: int):
+        """Run a depth-first search from this envelope state."""
+        nonlocal total
 
-            pull_paper_and_update(envelope)
+        # If we only have one piece of paper in the envelope
+        if len(envelope) == 1:
+            # If this is the the last piece of paper in the envelope,
+            # we're done
+            if envelope[0] == 1:
+                total += running_total * probability
+                return
 
-        total_single_paper_pulls += week_single_paper_pulls
+            # Otherwise, this is the 'only one piece of paper' case, so add
+            # to running total
+            running_total += 1
 
-    expected_times = total_single_paper_pulls / iterations
+        # Recurse through the envelope states available to us, multiplying the
+        # current probability by the probability of giong to that state
+        num_pieces = len(envelope)
+        for piece in envelope:
+            # Create copy of envelope
+            new_envelope = envelope.copy()
+
+            # Remove this piece of paper
+            new_envelope.remove(piece)
+
+            # Add newly created pieces of paper
+            piece = piece // 2
+            while piece >= 1:
+                new_envelope.append(piece // 2)
+                piece = piece // 2
+
+            # Recurse
+            dfs(new_envelope, probability * (1 / num_pieces), running_total)
+
+    dfs([8, 8], 1, 0)
 
     print(
         f"The expected number of times a single piece of paper is found in the envelope:\
-          \n\n\t{round(expected_times, 6)}\n"
+          \n\n\t{round(total, 6)}\n"
     )
-
-
-def pull_paper_and_update(envelope: List[int]):
-    """Pull a random piece of paper from the envelope, and cut/add new pieces if necessary.
-
-    NOTE: This function modifies its input argument.
-    """
-    # Get a random piece of paper
-    piece = random.choice(envelope)
-
-    # Remove chosen piece of paper from envelope
-    envelope.remove(piece)
-
-    # If our piece is bigger than size A5, cut it down to size
-    # and add all new pieces of paper to the envelope
-    while piece > 1:
-        envelope.append(piece // 2)
-        piece //= 2
 
 
 if __name__ == "__main__":
